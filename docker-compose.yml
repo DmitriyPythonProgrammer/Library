@@ -1,0 +1,61 @@
+version: '1.0'
+
+
+services:
+  web:
+    build: ./web-app
+    ports:
+      - 8000:8000
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql+asyncpg://postgres_admin:password@postgres/fastapi_library
+      API_KEY: 1j8-jfiuao[fAWSNMjolfoannmafwjponwa9u-dffwja0i-dawmd2n21-e4h129-4h1nfiusaz-uon
+      SECURITY: false
+
+  bot:
+    build: ./telegram-app
+    depends_on:
+      - redis
+    environment:
+      TOKEN: SECRET_TOKEN
+      REDIS_URL: redis://default:password@redis:6379/0
+
+  redis:
+    image: redis:latest
+    restart: on-failure
+    volumes:
+      - /path/to/local/dаta:/root/redis
+      - /path/to/local/redis.conf:/usr/local/etc/redis/redis.conf
+    environment:
+      - REDIS_PASSWORD=password
+      - REDIS_PORT=6379
+      - REDIS_DATABASES=1
+
+  postgres:
+    image: postgres:latest
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres_admin
+      POSTGRES_DB: fastapi_library
+
+  nginx:
+    image: nginx:latest
+    volumes:
+      - ./nginx/nginx_config.conf:/etc/nginx/conf.d/default.conf
+    ports:
+      - 8080:8080
+      - 443:443
+    depends_on:
+      - bot
+      - web
+
+
+volumes:
+  redis-data:
+  postgres-data:

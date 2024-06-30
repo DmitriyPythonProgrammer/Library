@@ -4,6 +4,7 @@ import os
 from dotenv import load_dotenv
 from routing.books import router as router_book
 from routing.authors import router as router_authors
+from utils.database import create_tables
 
 
 def swagger_monkey_patch(*args, **kwargs):
@@ -24,9 +25,6 @@ def get_application() -> FastAPI:
 app = get_application()
 
 
-
-
-
-
-
-
+@app.on_event("startup")
+async def startup_event():
+    await create_tables()

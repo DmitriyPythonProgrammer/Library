@@ -1,2 +1,5 @@
-REDIS_URL = "redis://localhost:6379/0"
-TOKEN = "6746246040:AAF6GNK5VCHlYvmQSzyVNtaZDsu4apCgS4o"
+import os
+
+REDIS_URL = os.getenv("REDIS_URL")
+TOKEN = os.getenv("TOKEN")
+
